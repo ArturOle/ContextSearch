@@ -8,7 +8,7 @@ install:
 update:
 	poetry update
 
-# Target to run tests (assuming you use pytest)
+# Target to run tests
 test:
 	poetry run pytest
 
@@ -16,12 +16,11 @@ test:
 requirements:
 	poetry export -f requirements.txt --output requirements/base.txt --without-hashes
 
-# Target to run linting (assuming you use flake8)
+# Target to run linting
 lint:
 	poetry run flake8 .
 
-# Target to run the application (replace with your main script)
-run:
+# Target to run the application
 	poetry run python src/main.py
 
 # Clean up cache files, etc.
