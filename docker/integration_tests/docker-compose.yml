@@ -23,5 +23,5 @@ services:
     environment:
       - SSL_CERT_DIR=/etc/ssl/certs
     command: > 
-      bash -c "python3 -m pytest ./test/integration_tests || exit 1" 
+      bash -c "poetry run pytest ./test/integration_tests || exit 1" 
       && docker-compose down

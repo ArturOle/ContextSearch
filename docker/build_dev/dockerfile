@@ -1,14 +1,15 @@
 FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
+ENV POETRY_HOME="/root/.poetry"
+ENV PATH="$POETRY_HOME/bin:$PATH"
 
 CMD ["bash"]
 
 RUN apt-get update
-RUN apt-get install -y python3 python3-pip
-RUN pip3 install torch --index-url https://download.pytorch.org/whl/cpu
+RUN apt-get install -y python3 python3-pip curl
+RUN curl -sSL https://install.python-poetry.org | python3 -
 
-COPY ./requirements /ragger/requirements
 WORKDIR /ragger
-RUN pip install -r requirements/test.txt
 COPY . /ragger
+RUN make install
