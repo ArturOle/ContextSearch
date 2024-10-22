@@ -23,6 +23,7 @@ tqdm = "^4.66.5"
 transformers = "^4.45.1"
 numpy = "^2.0.2"
 torch = { version = "^2.3.1", source = "torch"}
+it_core_news_sm = {url = "https://github.com/explosion/spacy-models/releases/download/it_core_news_sm-3.5.0/it_core_news_sm-3.5.0.tar.gz"}
 
 [tool.poetry.dev-dependencies]
 pytest = "^8.3.2"

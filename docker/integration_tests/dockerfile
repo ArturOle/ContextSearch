@@ -12,13 +12,10 @@ RUN apt install -y tesseract-ocr
 RUN apt install -y libtesseract-dev
 RUN apt install -y poppler-utils
 
-COPY ./requirements /ragger/requirements
 WORKDIR /ragger
 RUN pip install --upgrade pip
-RUN pip install -r requirements/test.txt
-RUN python3 -m spacy download en_core_web_sm
 COPY . /ragger
 RUN touch logs.log
-RUN pip install .
+RUN make install
 
 RUN export GIT_PYTHON_GIT_EXECUTABLE=$(which git)
