@@ -8,10 +8,6 @@ install:
 update:
 	poetry update
 
-# Target to run tests
-test:
-	poetry run pytest
-
 # Target to export requirements.txt for compatibility
 requirements:
 	poetry export -f requirements.txt --output requirements/base.txt --without-hashes
@@ -37,7 +33,6 @@ help:
 	@echo "Available commands:"
 	@echo "  install       Install project dependencies"
 	@echo "  update        Update project dependencies"
-	@echo "  test          Run tests"
 	@echo "  requirements  Export dependencies to requirements.txt"
 	@echo "  lint          Run linting"
 	@echo "  run           Run the application"
