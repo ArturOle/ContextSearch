@@ -15,7 +15,8 @@ class Preprocessor:
         self.splitter = TextSplitter(
             order="any",
             separators=['\.', '\n\n', '\n', '\s'],
-            is_separator_regex=True
+            is_separator_regex=True,
+            chunk_overlap=128
         )
 
     def process(self, literatures: list[LiteratureDTO]):

@@ -140,7 +140,7 @@ def test_literature_graph_creation_incorrect():
                 filepath=r'f:\ile\pat.h'
             ),
             chunks=[Chunk(text='text')],
-            tags=[Chunk(text='text')], # should be a list of Tag
+            tags=[Chunk(text='text')],  # should be a list of Tag
             relation_weights=[RelationWeight(
                 literature='literature',
                 tag='tag',
