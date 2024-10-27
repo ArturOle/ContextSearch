@@ -13,10 +13,12 @@ class Preprocessor:
         self.embedder = Embedder()
         self.extractor = Extractor()
         self.splitter = TextSplitter(
-            order="any",
-            separators=['\.', '\n\n', '\n', '\s'],
+            order="sequential",
+            separators=['\n\n', '\n', '\.', '\s'],
             is_separator_regex=True,
-            chunk_overlap=128
+            chunk_size=1024,
+            chunk_overlap=128,
+            margin=128
         )
 
     def process(self, literatures: list[LiteratureDTO]):
