@@ -9,8 +9,7 @@ from ..data_classes import Tag, RelationWeight, Chunk
 
 class Extractor:
     def __init__(self):
-        # self.nlp = spacy.load("en_core_web_sm")
-        # self.nlp.add_pipe("textrank")
+        pass
 
     def extract_keywords(self, text_list: List[str]) -> list:
         ranked_phrases = []
