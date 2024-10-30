@@ -14,6 +14,6 @@ def test_creating_embeddings_from_text():
     embedder = TextEmbedder()
     embedding = embedder.embed(text_to_embed)
 
-    assert pytest.approx(embedding, 1e-3) == np.load(
+    assert pytest.approx(embedding[0], 1e-3) == np.load(
         "test/unit_tests/data_manager_test/preprocessor_test/test_embedding.npy"
     )

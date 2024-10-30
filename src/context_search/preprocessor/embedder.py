@@ -28,14 +28,14 @@ class ImageEmbedder(AbstractEmbedder):
 
 
 class TextEmbedder:
-    def __init__(self, model_id="intfloat/e5-base-v2"):
+    def __init__(self, model_id="sentence-transformers/all-MiniLM-L6-v2"):
         self.model = TextEmbedding(
             model_name=model_id
         )
 
     def embed(self, text):
         """Embeds the given text using the model."""
-        return self.model.embed(text)
+        return list(self.model.embed(text))
 
     def __call__(self, doc):
         doc._.embedding = self.embed(doc.text)
@@ -47,9 +47,11 @@ class TextEmbedder:
     ) -> List[Embeddable]:
         """Produces embeddings for the given list of Embeddable objects."""
 
+        embeddings = self.embed([
+            embeddable_obj.text for embeddable_obj in embeddable_objs
+        ])
+
         for embeddable_obj in embeddable_objs:
-            embeddable_obj.embeddings = self.embed(
-                embeddable_obj.text
-            )
+            embeddable_obj.embeddings = embeddings.pop(0)
 
         return embeddable_objs
