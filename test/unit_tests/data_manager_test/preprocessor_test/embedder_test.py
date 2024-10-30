@@ -1,4 +1,5 @@
 from context_search.preprocessor.embedder import TextEmbedder
+from context_search.data_classes import Embeddable
 import pytest
 import numpy as np
 import random
@@ -21,7 +22,10 @@ def test_creating_embeddings_from_text():
 
 def test_creating_embeddings_from_multiple_texts():
     embedder = TextEmbedder()
-    embeddings = embedder.produce_embeddings([text_to_embed, text_to_embed])
+    chunk_1 = Embeddable(text=text_to_embed)
+    chunk_2 = Embeddable(text=text_to_embed)
+
+    embeddings = embedder.produce_embeddings([chunk_1, chunk_2])
 
     assert pytest.approx(embeddings[0][0], 1e-3) == np.load(
         "test/unit_tests/data_manager_test/preprocessor_test/test_embedding.npy"
