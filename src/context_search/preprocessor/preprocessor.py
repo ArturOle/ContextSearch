@@ -4,13 +4,13 @@ from ..data_classes import (
     LiteratureGraph,
 )
 from .extractor import Extractor
-from .embedder import Embedder
+from .embedder import TextEmbedder
 from .text_splitter import TextSplitter
 
 
 class Preprocessor:
     def __init__(self):
-        self.embedder = Embedder()
+        self.embedder = TextEmbedder()
         self.extractor = Extractor()
         self.splitter = TextSplitter(
             order="sequential",
