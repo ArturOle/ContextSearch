@@ -17,3 +17,14 @@ def test_creating_embeddings_from_text():
     assert pytest.approx(embedding[0], 1e-3) == np.load(
         "test/unit_tests/data_manager_test/preprocessor_test/test_embedding.npy"
     )
+
+
+def test_creating_embeddings_from_multiple_texts():
+    embedder = TextEmbedder()
+    embeddings = embedder.produce_embeddings([text_to_embed, text_to_embed])
+
+    assert pytest.approx(embeddings[0][0], 1e-3) == np.load(
+        "test/unit_tests/data_manager_test/preprocessor_test/test_embedding.npy"
+    )
+
+    assert pytest.approx(embeddings[1][0], 1e-3) == pytest.approx(embeddings[0][0], 1e-3)

@@ -156,5 +156,32 @@ def test_text_splitter_incorrect():
             margin=margin
         )
 
+
+def test_order_property_changes(mocker):
+
+    setup_separators = mocker.patch(
+        "context_search.preprocessor.text_splitter.TextSplitter.setup_separators"
+    )
+
+    chunk_size = 100
+    overlap = 10
+    margin = 10
+    splitter = TextSplitter(
+        chunk_size=chunk_size,
+        chunk_overlap=overlap,
+        margin=margin
+    )
+    assert setup_separators.call_count == 1
+    assert splitter.order == "any"
+
+    splitter.order = "sequential"
+    assert splitter.order == "sequential"
+    assert setup_separators.call_count == 2
+
+    splitter.order = "backward"
+    assert splitter.order == "backward"
+    assert setup_separators.call_count == 3
+
+
 if __name__ == "__main__":
     test_text_splitter_incorrect_overlap_out_of_range()

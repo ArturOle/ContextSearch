@@ -59,7 +59,7 @@ class TextSplitter(AbstractSplitter):
         self.chunk_size = chunk_size
         self.overlap = chunk_overlap
         self.margin = margin
-        self.order = order
+        self._order = order
         self._is_separator_regex = is_separator_regex
         self.separators = separators
 
@@ -92,11 +92,21 @@ class TextSplitter(AbstractSplitter):
         self.search_func: callable = None
         self.setup_separators(separators)
 
+    @property
+    def order(self):
+        return self._order
+
+    @order.setter
+    def order(self, value):
+        """ Assures the separators are compiled for the new order strategy."""
+        self._order = value
+        self.setup_separators(self.separators)
+
     def setup_separators(self, separators):
         """ Prepares compiled patterns for efficient search of the separators
         and sets the search function based on the order of the separators.
         """
-        match self.order.lower():
+        match self._order.lower():
             case "any":
                 if not self._is_separator_regex:
                     separators = '|'.join([
