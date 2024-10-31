@@ -1,4 +1,4 @@
-import inspect
+
 import re
 
 from abc import ABC, abstractmethod
@@ -51,13 +51,14 @@ class TextSplitter(AbstractSplitter):
             self,
             chunk_size: int = 1024,
             chunk_overlap: Union[int, float] = 256,
-            margin: int = 256,
+            margin: int = None,
             order: str = "any",
             separators: List[str] = ['\.', '\n\n', '\n', '\s'],
             is_separator_regex: bool = True,
     ):
         self.chunk_size = chunk_size
         self.overlap = chunk_overlap
+        margin = margin if margin is not None else self.overlap
         self.margin = margin
         self._order = order
         self._is_separator_regex = is_separator_regex

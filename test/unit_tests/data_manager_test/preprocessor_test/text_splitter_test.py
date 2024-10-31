@@ -70,19 +70,6 @@ def test_text_splitter_correct_overlap_margin():
         ]
 
 
-def test_text_splitter_incorrect_margin_none():
-    chunk_size = 100
-    overlap = 10
-    margin = None
-
-    with pytest.raises(ValueError):
-        TextSplitter(
-            chunk_size=chunk_size,
-            chunk_overlap=overlap,
-            margin=margin
-        )
-
-
 def test_text_splitter_incorrect_overlap_none():
     chunk_size = 100
     overlap = None
@@ -99,7 +86,7 @@ def test_text_splitter_incorrect_overlap_none():
 def test_text_splitter_incorrect_margin_out_of_range():
     chunk_size = 100
     overlap = 10
-    margin = None
+    margin = -1
 
     with pytest.raises(ValueError):
         TextSplitter(
@@ -107,6 +94,31 @@ def test_text_splitter_incorrect_margin_out_of_range():
             chunk_overlap=overlap,
             margin=margin
         )
+
+    chunk_size = 100
+    overlap = 10
+    margin = 11
+
+    with pytest.raises(ValueError):
+        TextSplitter(
+            chunk_size=chunk_size,
+            chunk_overlap=overlap,
+            margin=margin
+        )
+
+
+def test_text_splitter_margin_not_provided():
+    chunk_size = 100
+    overlap = 10
+    margin = None
+
+    ts = TextSplitter(
+        chunk_size=chunk_size,
+        chunk_overlap=overlap,
+        margin=margin
+    )
+
+    assert ts.margin == overlap
 
 
 def test_text_splitter_incorrect_overlap_out_of_range():
@@ -185,3 +197,6 @@ def test_order_property_changes(mocker):
 
 if __name__ == "__main__":
     test_text_splitter_incorrect_overlap_out_of_range()
+    test_text_splitter_incorrect_margin_out_of_range()
+    test_order_property_changes()
+    test_text_splitter_margin_not_provided()
