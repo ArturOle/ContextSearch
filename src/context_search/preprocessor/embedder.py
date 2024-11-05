@@ -1,29 +1,41 @@
-import torch
-from transformers import AutoModel, AutoTokenizer
+
+from fastembed import TextEmbedding
 from typing import List
 
 from ..data_classes import Embeddable
 
 
-class Embedder:
-    def __init__(self, model_id="intfloat/e5-base-v2"):
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        self.tokenizer = AutoTokenizer.from_pretrained(model_id)
-        self.model = AutoModel.from_pretrained(model_id).to(self.device)
-        self.model.eval()
+class AbstractEmbedder:
+    def embed(self, text):
+        raise NotImplementedError
+
+    def produce_embeddings(
+            self,
+            embeddable_objs: List[Embeddable]
+    ) -> List[Embeddable]:
+        raise NotImplementedError
+
+
+class ImageEmbedder(AbstractEmbedder):
+    def embed(self, text):
+        raise NotImplementedError
+
+    def produce_embeddings(
+            self,
+            embeddable_objs: List[Embeddable]
+    ) -> List[Embeddable]:
+        raise NotImplementedError
+
+
+class TextEmbedder:
+    def __init__(self, model_id="sentence-transformers/all-MiniLM-L6-v2"):
+        self.model = TextEmbedding(
+            model_name=model_id
+        )
 
     def embed(self, text):
         """Embeds the given text using the model."""
-        with torch.no_grad():
-            inputs = self.tokenizer(
-                text,
-                return_tensors="pt",
-                padding=True,
-                truncation=True
-            ).to(self.device)
-            outputs = self.model(**inputs)
-            squeezed_output = outputs.last_hidden_state.mean(dim=1).squeeze()
-            return squeezed_output.cpu().tolist()
+        return list(self.model.embed(text))
 
     def __call__(self, doc):
         doc._.embedding = self.embed(doc.text)
@@ -35,9 +47,11 @@ class Embedder:
     ) -> List[Embeddable]:
         """Produces embeddings for the given list of Embeddable objects."""
 
+        embeddings = self.embed([
+            embeddable_obj.text for embeddable_obj in embeddable_objs
+        ])
+
         for embeddable_obj in embeddable_objs:
-            embeddable_obj.embeddings = self.embed(
-                embeddable_obj.text
-            )
+            embeddable_obj.embeddings = embeddings.pop(0)
 
         return embeddable_objs

@@ -1,4 +1,4 @@
-import inspect
+
 import re
 
 from abc import ABC, abstractmethod
@@ -51,15 +51,16 @@ class TextSplitter(AbstractSplitter):
             self,
             chunk_size: int = 1024,
             chunk_overlap: Union[int, float] = 256,
-            margin: int = 256,
+            margin: int = None,
             order: str = "any",
             separators: List[str] = ['\.', '\n\n', '\n', '\s'],
             is_separator_regex: bool = True,
     ):
         self.chunk_size = chunk_size
         self.overlap = chunk_overlap
+        margin = margin if margin is not None else self.overlap
         self.margin = margin
-        self.order = order
+        self._order = order
         self._is_separator_regex = is_separator_regex
         self.separators = separators
 
@@ -92,11 +93,21 @@ class TextSplitter(AbstractSplitter):
         self.search_func: callable = None
         self.setup_separators(separators)
 
+    @property
+    def order(self):
+        return self._order
+
+    @order.setter
+    def order(self, value):
+        """ Assures the separators are compiled for the new order strategy."""
+        self._order = value
+        self.setup_separators(self.separators)
+
     def setup_separators(self, separators):
         """ Prepares compiled patterns for efficient search of the separators
         and sets the search function based on the order of the separators.
         """
-        match self.order.lower():
+        match self._order.lower():
             case "any":
                 if not self._is_separator_regex:
                     separators = '|'.join([
