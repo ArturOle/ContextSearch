@@ -1,6 +1,6 @@
 
-import spacy
-import pytextrank   # noqa: F401
+# import spacy
+# import pytextrank   # noqa: F401
 
 from typing import List, Tuple
 
@@ -9,15 +9,14 @@ from ..data_classes import Tag, RelationWeight, Chunk
 
 class Extractor:
     def __init__(self):
-        self.nlp = spacy.load("en_core_web_sm")
-        self.nlp.add_pipe("textrank")
+        pass
 
     def extract_keywords(self, text_list: List[str]) -> list:
         ranked_phrases = []
 
-        doc = self.nlp(''.join(text_list))
-        for phrase in doc._.phrases:
-            ranked_phrases.append([phrase.text, phrase.rank])
+        # # doc = self.nlp(''.join(text_list))
+        # for phrase in doc._.phrases:
+        #     ranked_phrases.append([phrase.text, phrase.rank])
 
         return ranked_phrases
 

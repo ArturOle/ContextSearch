@@ -4,18 +4,21 @@ from ..data_classes import (
     LiteratureGraph,
 )
 from .extractor import Extractor
-from .embedder import Embedder
+from .embedder import TextEmbedder
 from .text_splitter import TextSplitter
 
 
 class Preprocessor:
     def __init__(self):
-        self.embedder = Embedder()
+        self.embedder = TextEmbedder()
         self.extractor = Extractor()
         self.splitter = TextSplitter(
-            order="any",
-            separators=['\.', '\n\n', '\n', '\s'],
-            is_separator_regex=True
+            order="sequential",
+            separators=['\n\n', '\n', '\.', '\s'],
+            is_separator_regex=True,
+            chunk_size=1024,
+            chunk_overlap=128,
+            margin=128
         )
 
     def process(self, literatures: list[LiteratureDTO]):
