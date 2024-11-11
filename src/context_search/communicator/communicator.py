@@ -3,11 +3,32 @@ from ..utils import setup_logger
 from ..data_classes import LiteratureGraph
 from .query_builder import QueryBuilder
 
+from abc import ABC, abstractmethod
+
 
 logger = setup_logger("Communicator Logger", "logs.log")
 
 
-class Communicator:
+class DatabaseNotSupportedError(BaseException):
+    def __init__(self, db) -> None:
+        super().__init__(
+            ""
+        )
+
+
+class AbstractCommunciator(ABC):
+
+    @abstractmethod
+    def driver(self):
+        """ The connection objects for databases """
+        pass
+
+    @abstractmethod
+    def connection():
+        pass
+
+
+class Communicator(AbstractCommunciator):
     """Communicator class for interacting with the Neo4j database.
 
     Attributes:
@@ -39,6 +60,7 @@ class Communicator:
     def driver(self):
         if self._driver is not None:
             self._driver.close()
+            logger.info("Driver closed")
         del self._driver
 
     @staticmethod
@@ -132,3 +154,15 @@ class Communicator:
         if self._driver is not None:
             self._driver.close()
             logger.info("Driver closed")
+
+
+class DatabaseManager:
+    supported_db = {
+        "neo4j": Communicator
+    }
+
+    def __init__(self, adapter: str):
+        self.database_adapter = self.supported_db.get(adapter, None)
+
+        if self.database_adapter is None:
+            raise DatabaseNotSupportedError()

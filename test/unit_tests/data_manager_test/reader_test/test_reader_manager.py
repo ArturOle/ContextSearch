@@ -27,9 +27,9 @@ def test_reader_manager_read_pdf(mocker):
     assert isinstance(result, list) and len(result) == 1
 
     result = reader_manager.read(f"{cur_dir}/test_files")
-    assert isinstance(result, list) and len(result) == 3
+    assert isinstance(result, list) and len(result) == 6
 
-    assert_n_calls(mock_pdf_reader, 3)
+    assert_n_calls(mock_pdf_reader, 6)
 
 
 def test_reader_manager_read_txt(mocker):
@@ -53,7 +53,7 @@ def test_reader_manager_read_txt(mocker):
     assert isinstance(result, list) and len(result) == 1
 
     result = reader_manager.read(f"{cur_dir}/test_files")
-    assert isinstance(result, list) and len(result) == 3
+    assert isinstance(result, list) and len(result) == 6
 
     assert_n_calls(mock_text_reader, 2)
 
