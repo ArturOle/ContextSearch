@@ -5,7 +5,7 @@ import fitz
 import pytesseract
 
 from abc import ABC, abstractmethod
-from ftlangdetect import detect
+from fast_langdetect import detect
 from pdf2image import convert_from_path
 from typing import List
 
@@ -13,9 +13,11 @@ from ..data_classes import LiteratureDTO
 from ..utils import setup_logger, config_variables
 
 current_directory = os.path.dirname(__file__)
-
-
 logger = setup_logger('Reader Logger', 'logs.log', logging.INFO)
+SUPPORTED_LENGUAGES = {
+    "pl": "pol",
+    "en": "eng",
+}
 
 
 class ReadManager:
@@ -164,15 +166,22 @@ class PDFReader(AbstractReader):
 
         return paged_text
 
+    @staticmethod
+    def _detect_lang(string):
+        string = string.replace("\n", ' ')
+        lang = detect(string)["lang"]
+        return SUPPORTED_LENGUAGES.get(lang, "eng")
+
     def _read_file_ocr(self, file_path):
 
         pages = convert_from_path(file_path, 300)
 
-        # we are sacrificing one execution of tesseract to
+        # we sacrifice one execution of tesseract to
         # to detect main lenguage of analyzed text
-        lang = detect(pytesseract.image_to_string(pages[0]))["lang"]
+        lang = self._detect_lang(pytesseract.image_to_string(pages[0]))
+
         paged_text = []
-        for i, page in enumerate(pages):
+        for page in pages:
             page_text = pytesseract.image_to_string(page, lang)
             paged_text.append(page_text)
 

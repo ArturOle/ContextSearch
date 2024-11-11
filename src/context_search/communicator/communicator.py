@@ -4,12 +4,9 @@ from ..data_classes import LiteratureGraph
 from .query_builder import QueryBuilder
 
 from abc import ABC, abstractmethod
-from enum import Enum
+
 
 logger = setup_logger("Communicator Logger", "logs.log")
-
-
-class SupportedDatabses(Enum):
 
 
 class DatabaseNotSupportedError(BaseException):
@@ -27,7 +24,6 @@ class AbstractCommunciator(ABC):
         pass
 
     @abstractmethod
-    @staticmethod
     def connection():
         pass
 
