@@ -1,0 +1,13 @@
+.pytest_cache/
+.vscode
+logs.log
+__pycache__/
+.python-version
+data/**/*.pdf
+Ragger.egg-info
+!data/pdf-ai-generated/*
+.coverage
+src/context_search/utils/purge_whitespaces.py
+.venv_cs
+ContextSearch.egg-info
+build/

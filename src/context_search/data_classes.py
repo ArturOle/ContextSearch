@@ -16,6 +16,11 @@ class Tag(Embeddable):
     description: Optional[str] = None
 
 
+class Page(BaseModel):
+    page_number: int
+    text: str
+
+
 class Literature(BaseModel):
     filename: str
     filepath: str
