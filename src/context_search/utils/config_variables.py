@@ -26,7 +26,7 @@ class EnvInterface:
             with open(path, "rb") as conf_file:
                 EnvInterface._config = tomllib.load(conf_file)
         except FileNotFoundError as err:
-            print(
+            logging.error(
                 f"Could not find config file in the project root. {err}"
             )
 
