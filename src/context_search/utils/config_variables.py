@@ -1,52 +1,52 @@
 
 import os
+import tomllib
+import logging
 
 
-def get_OCR_variables():
-    tesseract_path = ""
-    poppler_path = ""
+class EnvInterface:
+    """
+    Clas for managing shared values of config.toml
+    After initizlization, the variables are shared across all instances
+    on purpose so that it is accessible from different parts of
+    system if needed.
+    """
+    _config = {}
 
-    current_working_directory = os.getcwd()
-    path_to_config = os.path.join(current_working_directory, "config.ini")
-    with open(path_to_config, "r") as file:
-        lines = file.readlines()
+    def __init__(self):
+        current_working_directory = os.getcwd()
+        path_to_config = os.path.join(
+            current_working_directory,
+            "config.toml"
+        )
+        self.read_config(path_to_config)
 
-        for line in lines:
-            if line.startswith("TESSERACT_PATH"):
-                tesseract_path = line.split("=")[1].strip()
-            if line.startswith("POPPLER_PATH"):
-                poppler_path = line.split("=")[1].strip()
+    def read_config(self, path):
+        try:
+            with open(path, "rb") as conf_file:
+                EnvInterface._config = tomllib.load(conf_file)
+        except FileNotFoundError as err:
+            print(
+                f"Could not find config file in the project root. {err}"
+            )
 
-    return tesseract_path, poppler_path
+    @staticmethod
+    def get_OCR_vars():
+        return EnvInterface._config.get("OCR")
 
+    @staticmethod
+    def get_neo4j_vars():
+        return EnvInterface._config.get("neo4j")
 
-def get_neo4j_variables():
-    uri = ""
-    user = ""
-    password = ""
+    @staticmethod
+    def set_env_variables_from_config():
+        """
+        Static method for setting env variables
+        for necessary modules
+        """
+        for ocr_kwarg in EnvInterface.get_OCR_vars().items():
+            os.environ[ocr_kwarg[0]] = ocr_kwarg[1]
 
-    current_working_directory = os.getcwd()
-    path_to_config = os.path.join(current_working_directory, "config.ini")
-    with open(path_to_config, "r") as file:
-        lines = file.readlines()
+        for db_kwarg in EnvInterface.get_neo4j_vars().items():
+            os.environ[db_kwarg[0]] = db_kwarg[1]
 
-        for line in lines:
-            if line.startswith("NEO4J_URI"):
-                uri = line.split("=")[1].strip()
-            if line.startswith("NEO4J_USER"):
-                user = line.split("=")[1].strip()
-            if line.startswith("NEO4J_PASSWORD"):
-                password = line.split("=")[1].strip()
-
-    return uri, user, password
-
-
-def set_env_variables_from_config():
-    tesseract_path, poppler_path = get_OCR_variables()
-    os.environ["TESSERACT_PATH"] = tesseract_path
-    os.environ["POPPLER_PATH"] = poppler_path
-
-    uri, user, password = get_neo4j_variables()
-    os.environ["NEO4J_URI"] = uri
-    os.environ["NEO4J_USER"] = user
-    os.environ["NEO4J_PASSWORD"] = password
