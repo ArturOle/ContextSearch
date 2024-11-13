@@ -1,5 +1,5 @@
 from neo4j import GraphDatabase
-from qdrant_client import QdrantClient
+from abc import ABC, abstractmethod
 
 from ..utils import setup_logger
 from ..data_classes import LiteratureGraph
@@ -7,13 +7,6 @@ from .query_builder import QueryBuilder
 
 
 logger = setup_logger("Communicator Logger", "logs.log")
-
-
-class DatabaseNotSupportedError(BaseException):
-    def __init__(self, db) -> None:
-        super().__init__(
-            ""
-        )
 
 
 class AbstractCommAdapter(ABC):
@@ -26,6 +19,15 @@ class AbstractCommAdapter(ABC):
     @abstractmethod
     def connection():
         pass
+
+
+class DatabaseNotSupported(BaseException, AbstractCommAdapter):
+    def __init__(self, *args, **kwargs) -> None:
+        super(BaseException).__init__(
+            "The requested database is not supported.\n"
+            "Supported:\n"
+            "   {Neo4j, Qdrant}"
+        )
 
 
 class CommAdapterNeo(AbstractCommAdapter):
@@ -82,7 +84,7 @@ class CommAdapterNeo(AbstractCommAdapter):
             session,
             literature_graph: LiteratureGraph
     ):
-        session.write_transaction(
+        session.execute_write(
             self._add_literature_subgraph,
             literature_graph
         )
@@ -92,7 +94,7 @@ class CommAdapterNeo(AbstractCommAdapter):
         """Creates vector indexes for chunks and tags.
         This function is separated from the add_literature_subgraph
         because the indexes cannot be created in the same transaction"""
-        session.write_transaction(self._index_ebeddables)
+        session.execute_write(self._index_ebeddables)
 
     def _add_literature_subgraph(self, tx, literature_graph: LiteratureGraph):
         """Builds the the nodes and relationships based on the given
@@ -117,25 +119,25 @@ class CommAdapterNeo(AbstractCommAdapter):
 
     @connection
     def get_literature(self, session, filename):
-        return session.read_transaction(QueryBuilder._get_literature, filename)
+        return session.execute_read(QueryBuilder._get_literature, filename)
 
     @connection
     def get_literature_chunks(self, session, filename):
-        return session.read_transaction(
+        return session.execute_read(
             QueryBuilder._get_literature_chunks,
             filename
         )
 
     @connection
     def get_literature_tags(self, session, filename):
-        return session.read_transaction(
+        return session.execute_read(
             QueryBuilder._get_literature_tags,
             filename
         )
 
     @connection
     def search_n_records(self, session, query, n):
-        return session.read_transaction(
+        return session.execute_read(
             QueryBuilder._search_n_records,
             query,
             n
@@ -143,11 +145,11 @@ class CommAdapterNeo(AbstractCommAdapter):
 
     @connection
     def get_all_literatures(self, session):
-        return session.read_transaction(QueryBuilder._get_all_literatures)
+        return session.execute_read(QueryBuilder._get_all_literatures)
 
     @connection
     def delete_literature(self, session, filename):
-        session.write_transaction(QueryBuilder._delete_literature, filename)
+        session.execute_write(QueryBuilder._delete_literature, filename)
 
     def __del__(self):
         if self._driver is not None:
@@ -210,7 +212,5 @@ class DatabaseManager:
     def __init__(self, adapter: str):
         self.database_adapter = self.supported_db.get(
             adapter,
-            DatabaseNotSupportedError
+            DatabaseNotSupported
         )
-
-    def 
