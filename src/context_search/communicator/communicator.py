@@ -1,4 +1,6 @@
 from neo4j import GraphDatabase
+from qdrant_client import QdrantClient
+
 from ..utils import setup_logger
 from ..data_classes import LiteratureGraph
 from .query_builder import QueryBuilder
@@ -7,7 +9,26 @@ from .query_builder import QueryBuilder
 logger = setup_logger("Communicator Logger", "logs.log")
 
 
-class Communicator:
+class DatabaseNotSupportedError(BaseException):
+    def __init__(self, db) -> None:
+        super().__init__(
+            ""
+        )
+
+
+class AbstractCommAdapter(ABC):
+
+    @abstractmethod
+    def driver(self):
+        """ The connection objects for databases """
+        pass
+
+    @abstractmethod
+    def connection():
+        pass
+
+
+class CommAdapterNeo(AbstractCommAdapter):
     """Communicator class for interacting with the Neo4j database.
 
     Attributes:
@@ -132,3 +153,64 @@ class Communicator:
         if self._driver is not None:
             self._driver.close()
             logger.info("Driver closed")
+
+
+class CommAdapterQdrant(AbstractCommAdapter):
+    """Communicator class for interacting with the Neo4j database.
+
+    Attributes:
+        uri (str): The URI of the Neo4j database.
+        user (str): The username for the Neo4j database.
+        password (str): The password for the Neo4j database.
+    """
+
+    def __init__(self, uri, user, password):
+        self._uri = uri
+        self._user = user
+        self._password = password
+        self._driver = None
+
+    @property
+    def driver(self):
+        if self._driver is None:
+            self._driver = GraphDatabase.driver(
+                self._uri,
+                auth=(self._user, self._password)
+            )
+        return self._driver
+
+    @driver.setter
+    def driver(self, driver):
+        self._driver = driver
+
+    @driver.deleter
+    def driver(self):
+        if self._driver is not None:
+            self._driver.close()
+            logger.info("Driver closed")
+        del self._driver
+
+    @staticmethod
+    def connection(func):
+        def wrapper(self, *args, **kwargs):
+            session = self.driver.session(database="neo4j")
+            result = func(self, session, *args, **kwargs)
+            session.close()
+            return result
+
+        return wrapper
+
+
+class DatabaseManager:
+    supported_db = {
+        "neo4j": CommAdapterNeo,
+        "qdrant": CommAdapterQdrant
+    }
+
+    def __init__(self, adapter: str):
+        self.database_adapter = self.supported_db.get(
+            adapter,
+            DatabaseNotSupportedError
+        )
+
+    def 
