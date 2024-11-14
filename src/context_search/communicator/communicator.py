@@ -1,13 +1,39 @@
 from neo4j import GraphDatabase
+from abc import ABC, abstractmethod
+
 from ..utils import setup_logger
 from ..data_classes import LiteratureGraph
 from .query_builder import QueryBuilder
+
+from abc import ABC, abstractmethod
 
 
 logger = setup_logger("Communicator Logger", "logs.log")
 
 
-class Communicator:
+
+class AbstractCommAdapter(ABC):
+
+    @abstractmethod
+    def driver(self):
+        """ The connection objects for databases """
+        pass
+
+    @abstractmethod
+    def connection():
+        pass
+
+
+class DatabaseNotSupported(BaseException, AbstractCommAdapter):
+    def __init__(self, *args, **kwargs) -> None:
+        super(BaseException).__init__(
+            "The requested database is not supported.\n"
+            "Supported:\n"
+            "   {Neo4j, Qdrant}"
+        )
+
+
+class CommAdapterNeo(AbstractCommAdapter):
     """Communicator class for interacting with the Neo4j database.
 
     Attributes:
@@ -39,6 +65,7 @@ class Communicator:
     def driver(self):
         if self._driver is not None:
             self._driver.close()
+            logger.info("Driver closed")
         del self._driver
 
     @staticmethod
@@ -61,7 +88,7 @@ class Communicator:
             session,
             literature_graph: LiteratureGraph
     ):
-        session.write_transaction(
+        session.execute_write(
             self._add_literature_subgraph,
             literature_graph
         )
@@ -71,7 +98,7 @@ class Communicator:
         """Creates vector indexes for chunks and tags.
         This function is separated from the add_literature_subgraph
         because the indexes cannot be created in the same transaction"""
-        session.write_transaction(self._index_ebeddables)
+        session.execute_write(self._index_ebeddables)
 
     def _add_literature_subgraph(self, tx, literature_graph: LiteratureGraph):
         """Builds the the nodes and relationships based on the given
@@ -96,25 +123,25 @@ class Communicator:
 
     @connection
     def get_literature(self, session, filename):
-        return session.read_transaction(QueryBuilder._get_literature, filename)
+        return session.execute_read(QueryBuilder._get_literature, filename)
 
     @connection
     def get_literature_chunks(self, session, filename):
-        return session.read_transaction(
+        return session.execute_read(
             QueryBuilder._get_literature_chunks,
             filename
         )
 
     @connection
     def get_literature_tags(self, session, filename):
-        return session.read_transaction(
+        return session.execute_read(
             QueryBuilder._get_literature_tags,
             filename
         )
 
     @connection
     def search_n_records(self, session, query, n):
-        return session.read_transaction(
+        return session.execute_read(
             QueryBuilder._search_n_records,
             query,
             n
@@ -122,13 +149,72 @@ class Communicator:
 
     @connection
     def get_all_literatures(self, session):
-        return session.read_transaction(QueryBuilder._get_all_literatures)
+        return session.execute_read(QueryBuilder._get_all_literatures)
 
     @connection
     def delete_literature(self, session, filename):
-        session.write_transaction(QueryBuilder._delete_literature, filename)
+        session.execute_write(QueryBuilder._delete_literature, filename)
 
     def __del__(self):
         if self._driver is not None:
             self._driver.close()
             logger.info("Driver closed")
+
+
+class CommAdapterQdrant(AbstractCommAdapter):
+    """Communicator class for interacting with the Neo4j database.
+
+    Attributes:
+        uri (str): The URI of the Neo4j database.
+        user (str): The username for the Neo4j database.
+        password (str): The password for the Neo4j database.
+    """
+
+    def __init__(self, uri, user, password):
+        self._uri = uri
+        self._user = user
+        self._password = password
+        self._driver = None
+
+    @property
+    def driver(self):
+        if self._driver is None:
+            self._driver = GraphDatabase.driver(
+                self._uri,
+                auth=(self._user, self._password)
+            )
+        return self._driver
+
+    @driver.setter
+    def driver(self, driver):
+        self._driver = driver
+
+    @driver.deleter
+    def driver(self):
+        if self._driver is not None:
+            self._driver.close()
+            logger.info("Driver closed")
+        del self._driver
+
+    @staticmethod
+    def connection(func):
+        def wrapper(self, *args, **kwargs):
+            session = self.driver.session(database="neo4j")
+            result = func(self, session, *args, **kwargs)
+            session.close()
+            return result
+
+        return wrapper
+
+
+class DatabaseManager:
+    supported_db = {
+        "neo4j": CommAdapterNeo,
+        "qdrant": CommAdapterQdrant
+    }
+
+    def __init__(self, adapter: str):
+        self.database_adapter = self.supported_db.get(
+            adapter,
+            DatabaseNotSupported
+        )

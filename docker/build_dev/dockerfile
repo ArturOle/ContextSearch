@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV POETRY_HOME="/root/.poetry"
@@ -7,9 +7,9 @@ ENV PATH="$POETRY_HOME/bin:$PATH"
 CMD ["bash"]
 
 RUN apt-get update
-RUN apt-get install -y python3 python3-pip curl
+RUN apt-get install -y python3 pipx curl
 RUN curl -sSL https://install.python-poetry.org | python3 -
 
 WORKDIR /ragger
 COPY . /ragger
-RUN make install
+RUN poetry install

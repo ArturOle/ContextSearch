@@ -1,6 +1,6 @@
 import pytest
 
-from context_search.communicator import Communicator
+from context_search.communicator import CommAdapterNeo
 from context_search.data_classes import Literature
 from context_search.communicator.query_builder import QueryBuilder
 
@@ -14,7 +14,7 @@ class TestCommunicatorConnection:
 
     def test_communicator_creation(test):
         test.setup_test()
-        test.communicator = Communicator(test.uri, test.user, test.password)
+        test.communicator = CommAdapterNeo(test.uri, test.user, test.password)
         assert test.communicator is not None
         test.communicator = None
 
@@ -24,7 +24,7 @@ class TestCommunicatorTransactions:
         test.uri = "neo4j://database:7687"
         test.user = "neo4j"
         test.password = "StrongPsPsP5"
-        test.communicator = Communicator(test.uri, test.user, test.password)
+        test.communicator = CommAdapterNeo(test.uri, test.user, test.password)
         test.literature = Literature(
             filename="test",
             filepath="test"
@@ -33,7 +33,7 @@ class TestCommunicatorTransactions:
     def test_add_literature(test):
         test.setup_test()
         test.session = test.communicator.driver.session(database="neo4j")
-        test.session.write_transaction(
+        test.session.execute_write(
             QueryBuilder._merge_literature,
             test.literature
         )
@@ -43,7 +43,7 @@ class TestCommunicatorTransactions:
     def test_get_literature(test):
         test.setup_test()
         test.session = test.communicator.driver.session(database="neo4j")
-        test.session.write_transaction(
+        test.session.execute_write(
             QueryBuilder._merge_literature,
             test.literature
         )
@@ -55,7 +55,7 @@ class TestCommunicatorTransactions:
     def test_get_all_literatures(test):
         test.setup_test()
         test.session = test.communicator.driver.session(database="neo4j")
-        test.session.write_transaction(
+        test.session.execute_write(
             QueryBuilder._merge_literature,
             test.literature
         )

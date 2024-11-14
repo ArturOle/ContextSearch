@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ContextSearch"
-version = "0.6.0"
+version = "0.8.0"
 description = "User friendly system for semantic search."
 authors = [
     "ArturOle"
@@ -20,6 +20,8 @@ pytesseract = "^0.3.13"
 tqdm = "^4.66.5"
 numpy = ">=1.21,<2"
 fastembed = "0.4.1"
+fast-langdetect = "^0.2.2"
+
 
 [tool.poetry.dev-dependencies]
 pytest = "^8.3.2"
