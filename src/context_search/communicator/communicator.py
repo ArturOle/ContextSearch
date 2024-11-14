@@ -11,6 +11,7 @@ from abc import ABC, abstractmethod
 logger = setup_logger("Communicator Logger", "logs.log")
 
 
+
 class AbstractCommAdapter(ABC):
 
     @abstractmethod
