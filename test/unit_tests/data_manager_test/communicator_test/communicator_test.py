@@ -2,7 +2,7 @@ import pytest
 
 from unittest.mock import MagicMock, patch
 
-from context_search.communicator import Communicator
+from context_search.communicator import CommAdapterNeo
 
 
 class TestCommunicatorConnection:
@@ -14,7 +14,7 @@ class TestCommunicatorConnection:
 
     def test_communicator_creation(test):
         test.setup_test()
-        test.communicator = Communicator(test.uri, test.user, test.password)
+        test.communicator = CommAdapterNeo(test.uri, test.user, test.password)
         assert test.communicator is not None
         test.communicator = None
 
@@ -30,7 +30,7 @@ class TestInterfaceInvocations:
         test.uri = "neo4j://database:7687"
         test.user = "neo4j"
         test.password = "StrongPsPsP5"
-        test.communicator = Communicator(test.uri, test.user, test.password)
+        test.communicator = CommAdapterNeo(test.uri, test.user, test.password)
 
     def test_driver_property_invocation(test, mock_driver):
         test.setup_test()

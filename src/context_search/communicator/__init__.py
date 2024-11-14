@@ -1,4 +1,4 @@
 
-from .communicator import Communicator
+from .communicator import CommAdapterNeo
 
-__all__ = ["Communicator"]
+__all__ = ["CommAdapterNeo"]

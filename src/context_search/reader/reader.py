@@ -10,7 +10,7 @@ from pdf2image import convert_from_path
 from typing import List
 
 from ..data_classes import LiteratureDTO
-from ..utils import setup_logger, config_variables
+from ..utils import setup_logger, EnvInterface
 
 current_directory = os.path.dirname(__file__)
 logger = setup_logger('Reader Logger', 'logs.log', logging.INFO)
@@ -125,18 +125,13 @@ class PDFReader(AbstractReader):
         directory as the script that is being run with paths to tesseract
         and poppler bin folder (NOT TO EXECUTABLES, BUT FOLDERS).
         """
-        if not os.getenv("POPPLER_PATH") or not os.getenv("TESSERACT_PATH"):
-            self.tesseract_path, self.poppler_path = config_variables.get_OCR_variables()
+        self.tesseract_path = os.getenv("TESSERACT_PATH")
+        self.poppler_path = os.getenv("POPPLER_PATH")
 
-        if os.getenv("POPPLER_PATH"):
-            self.poppler_path = os.getenv("POPPLER_PATH")
-        else:
-            os.environ["POPPLER_PATH"] = self.poppler_path
-
-        if os.getenv("TESSERACT_PATH"):
-            self.tesseract_path = os.getenv("TESSERACT_PATH")
-        else:
-            os.environ["TESSERACT_PATH"] = self.tesseract_path
+        if not self.tesseract_path or not self.poppler_path:
+            ocr_vars = EnvInterface.get_OCR_vars()
+            self.tesseract_path = ocr_vars.get("TESSERACT_PATH")
+            self.poppler_path = ocr_vars.get("POPPLER_PATH")
 
         if os.name == "nt":
             # system specific path for windows
