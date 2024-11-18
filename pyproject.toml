@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ContextSearch"
-version = "0.7.0"
+version = "0.7.1"
 description = "User friendly system for semantic search."
 authors = [
     "ArturOle"

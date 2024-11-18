@@ -51,7 +51,7 @@ class DataManager:
             similarity score.
         """
         embedded_query = self.preprocessor.embedder.embed(query)
-        return self.communicator.search_n_records(embedded_query, n)
+        return self.communicator.search_n_records(embedded_query[0], n)
 
     def insert(self, directories: list) -> None:
         """Inserts data from the given directories to the database.
