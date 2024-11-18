@@ -4,7 +4,7 @@
 
 import os
 
-from src.data_manager import DataManager
+from context_search.data_manager import DataManager
 
 
 cwd = os.getcwd()
