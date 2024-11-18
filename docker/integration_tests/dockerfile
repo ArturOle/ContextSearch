@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV POETRY_HOME="/root/.poetry"
@@ -7,7 +7,7 @@ ENV PATH="$POETRY_HOME/bin:$PATH"
 CMD ["bash"]
 
 RUN apt-get update --fix-missing
-RUN apt-get install -y python3 python3-pip git ca-certificates lsb-release ubuntu-keyring software-properties-common curl
+RUN apt-get install -y python3 pipx git ca-certificates lsb-release ubuntu-keyring software-properties-common curl
 RUN curl -sSL https://install.python-poetry.org | python3 -
 
 RUN update-ca-certificates --fresh
@@ -17,9 +17,8 @@ RUN apt install -y libtesseract-dev
 RUN apt install -y poppler-utils
 
 WORKDIR /ragger
-RUN pip install --upgrade pip
 COPY . /ragger
 RUN touch logs.log
-RUN make install
+RUN poetry install
 
 RUN export GIT_PYTHON_GIT_EXECUTABLE=$(which git)

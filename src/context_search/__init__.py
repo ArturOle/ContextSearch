@@ -2,15 +2,15 @@ from .context_search import ContextSearch
 from .data_manager import DataManager
 from .reader import ReadManager
 from .preprocessor import Preprocessor
-from .communicator import Communicator
-from .utils import setup_logger, config_variables
+from .communicator import CommAdapterNeo
+from .utils import setup_logger, EnvInterface
 
 __all__ = [
     'ContextSearch',
     'DataManager',
     'ReadManager',
     'Preprocessor',
-    'Communicator',
+    'CommAdapterNeo',
     'setup_logger',
-    'config_variables'
+    'EnvInterface'
 ]

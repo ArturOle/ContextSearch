@@ -2,9 +2,8 @@ import os
 
 from .reader import ReadManager
 from .preprocessor import Preprocessor
-from .communicator import Communicator
-from .utils import setup_logger, config_variables
-
+from .communicator import CommAdapterNeo
+from .utils import setup_logger, EnvInterface
 
 logger = setup_logger('Data Manager Logger', 'logs.log')
 
@@ -15,23 +14,24 @@ class DataManager:
     _communicator = None
 
     def __init__(self):
+        EnvInterface().set_env_variables_from_config()
         self.read_manager = ReadManager()
         self.preprocessor = Preprocessor()
 
     @property
     def communicator(self):
         if self._communicator is None:
-            neo4j_variables = config_variables.get_neo4j_variables()
-            self._communicator = Communicator(
-                uri=neo4j_variables[0],
-                user=neo4j_variables[1],
-                password=neo4j_variables[2]
+            neo4j_variables = EnvInterface.get_neo4j_vars()
+            self._communicator = CommAdapterNeo(
+                uri=neo4j_variables["NEO4J_URI"],
+                user=neo4j_variables["NEO4J_USER"],
+                password=neo4j_variables["NEO4J_PASSWORD"]
             )
-            logger.info(f"""
+            logger.debug(f"""
             Communicator created with:
-            uri: {neo4j_variables[0]}
-            user: {neo4j_variables[1]}
-            password: {neo4j_variables[2]}
+            uri: {neo4j_variables["NEO4J_URI"]}
+            user: {neo4j_variables["NEO4J_USER"]}
+            password: {neo4j_variables["NEO4J_PASSWORD"]}
             """)
         return self._communicator
 
