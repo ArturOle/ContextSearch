@@ -4,13 +4,13 @@
 
 import os
 
-from context_search.data_manager import DataManager
+from context_search.context_search import ContextSearch
 
 
 cwd = os.getcwd()
 
-dm = DataManager()
-dm.insert([
+cs = ContextSearch()
+cs.submit(path=[
     cwd + r"/data/pdf-ai-generated/ES_article.pdf",
     cwd + r"/data/pdf-ai-generated/ML_article.pdf",
     cwd + r"/data/pdf-ai-generated/HumanInteligence_article.pdf"
