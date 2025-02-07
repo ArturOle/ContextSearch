@@ -1,6 +1,6 @@
 
-# import spacy
-# import pytextrank   # noqa: F401
+import spacy
+import pytextrank   # noqa: F401
 
 from typing import List, Tuple
 
@@ -14,9 +14,9 @@ class Extractor:
     def extract_keywords(self, text_list: List[str]) -> list:
         ranked_phrases = []
 
-        # # doc = self.nlp(''.join(text_list))
-        # for phrase in doc._.phrases:
-        #     ranked_phrases.append([phrase.text, phrase.rank])
+        doc = self.nlp(''.join(text_list))
+        for phrase in doc._.phrases:
+            ranked_phrases.append([phrase.text, phrase.rank])
 
         return ranked_phrases
 
