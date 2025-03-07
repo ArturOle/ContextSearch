@@ -12,4 +12,4 @@ RUN curl -sSL https://install.python-poetry.org | python3 -
 
 WORKDIR /ragger
 COPY . /ragger
-RUN poetry install
+RUN poetry install --with dev

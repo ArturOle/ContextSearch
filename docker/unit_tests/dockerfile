@@ -17,6 +17,6 @@ RUN apt install -y poppler-utils
 WORKDIR /ragger
 COPY . /ragger
 RUN touch logs.log
-RUN poetry install
+RUN poetry install --with dev
 
 RUN export GIT_PYTHON_GIT_EXECUTABLE=$(which git)
