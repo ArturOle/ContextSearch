@@ -48,9 +48,9 @@ The project currently is not mature enough to be submitted to PYPI, that's why t
 
 ### Alternative build (Docker)
 
-Use docker-compose files which are ready to use without any tinkering with the config file. 
+Use docker-compose files that are ready to use without any tinkering with the config file. 
 
-### Run seamntic search
+### Run semantic search
 
 Refer to `examples/example_submit.py` on how to upload files to the database and to `examples/example_retrieve.py` on how to retrieve data. The extensive tutorial is "in progress".
 
