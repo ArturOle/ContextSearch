@@ -1,7 +1,4 @@
-
-# import spacy
-# import pytextrank   # noqa: F401
-
+from keybert import KeyBERT
 from typing import List, Tuple
 
 from ..data_classes import Tag, RelationWeight, Chunk
@@ -9,16 +6,18 @@ from ..data_classes import Tag, RelationWeight, Chunk
 
 class Extractor:
     def __init__(self):
-        pass
+        self.kw_model = KeyBERT()
 
     def extract_keywords(self, text_list: List[str]) -> list:
-        ranked_phrases = []
+        joined_text = ''.join(text_list)
+        keywords = self.kw_model.extract_keywords(
+            joined_text,
+            keyphrase_ngram_range=(1, 1),
+            top_n=10,
+            word_embeddings=self.kw_model.extract_embeddings(joined_text)[1]
+        )
 
-        # # doc = self.nlp(''.join(text_list))
-        # for phrase in doc._.phrases:
-        #     ranked_phrases.append([phrase.text, phrase.rank])
-
-        return ranked_phrases
+        return keywords
 
     def produce_tags_and_relations(
             self,

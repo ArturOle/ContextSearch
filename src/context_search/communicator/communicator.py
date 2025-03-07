@@ -8,8 +8,7 @@ from .query_builder import QueryBuilder
 from abc import ABC, abstractmethod
 
 
-logger = setup_logger("Communicator Logger", "logs.log")
-
+logger = setup_logger("Communicator", "logs.log")
 
 
 class AbstractCommAdapter(ABC):
@@ -154,6 +153,10 @@ class CommAdapterNeo(AbstractCommAdapter):
     @connection
     def delete_literature(self, session, filename):
         session.execute_write(QueryBuilder._delete_literature, filename)
+
+    @connection
+    def delete_all_literatures(self, session):
+        session.execute_write(QueryBuilder._delete_all)
 
     def __del__(self):
         if self._driver is not None:

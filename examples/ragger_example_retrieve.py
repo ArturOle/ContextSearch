@@ -4,11 +4,11 @@
 
 import os
 
-from src.data_manager import DataManager
+from context_search.context_search import ContextSearch
 
 
 cwd = os.getcwd()
 
-dm = DataManager()
-for record in dm.retrieve_data("machine Inteligence", 5):
+cs = ContextSearch()
+for record in cs.retrieve("machine Inteligence", 5):
     print(record)
