@@ -2,16 +2,18 @@ import logging
 
 
 def setup_logger(name, log_file, level=logging.INFO):
-    logging_level = level
+    logger = logging.getLogger(name)
 
-    logger = logging.getLogger('Reader Logger')
-    logger.setLevel(logging_level)
+    if logger.hasHandlers():
+        logger.handlers.clear()
 
-    file_handler = logging.FileHandler('logs.log')
+    logger.setLevel(level)
+
+    file_handler = logging.FileHandler(log_file)
     console_handler = logging.StreamHandler()
 
-    file_handler.setLevel(logging_level)
-    console_handler.setLevel(logging_level)
+    file_handler.setLevel(level)
+    console_handler.setLevel(level)
 
     formatter = logging.Formatter(
         '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
