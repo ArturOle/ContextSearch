@@ -10,6 +10,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      
+      - name: Cache Poetry packages
+        uses: actions/cache@v4
+        with:
+          path: /home/runner/.cache/pypoetry
+          key: ${{ runner.os }}-pypoetry-${{ hashFiles('**/pyproject.toml') }}
 
       - name: Build image
         run: docker compose -f ./docker/build_dev/docker-compose.yml build

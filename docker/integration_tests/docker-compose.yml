@@ -15,6 +15,9 @@ services:
     build:
       context: ../../
       dockerfile: docker/integration_tests/dockerfile
+    volumes:
+      - /home/runner/.cache/pip:/root/.cache/pip
+      - /home/runner/.cache/pypoetry:/root/.cache/pypoetry
     depends_on:
       - database
     links:

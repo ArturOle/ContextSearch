@@ -4,4 +4,8 @@ services:
     build:
       context: ../../
       dockerfile: docker/build_dev/dockerfile
+    volumes:
+      - /home/runner/.cache/pip:/root/.cache/pip
+      - /home/runner/.cache/pypoetry:/root/.cache/pypoetry
+    command: ["poetry", "run", "pytest"]
     container_name: ragger

@@ -5,6 +5,9 @@ services:
       context: ../../
       dockerfile: docker/unit_tests/dockerfile
     container_name: ragger
+    volumes:
+      - /home/runner/.cache/pip:/root/.cache/pip
+      - /home/runner/.cache/pypoetry:/root/.cache/pypoetry
     command: > 
       bash -c "poetry run pytest ./test/unit_tests || exit 1" 
       && docker-compose down
