@@ -80,3 +80,21 @@ class DataManager:
         for literature in literatures:
             self.communicator.add_literature_subgraph(literature)
             self.communicator.create_vector_indexes()
+
+    def delete(self, filename: str) -> None:
+        """Deletes a literature from the database.
+
+        Parameters:
+            filename (str): The name of the file to be deleted.
+        """
+        if self.communicator.get_literature(filename) is None:
+            logger.error(f"Literature {filename} not found.")
+            raise FileNotFoundError(f"Literature {filename} not found.")
+        else:
+            self.communicator.delete_literature(filename)
+            logger.info(f"Literature {filename} deleted.")
+
+    def delete_all(self) -> None:
+        """Deletes all literatures from the database."""
+        self.communicator.delete_all_literatures()
+        logger.info("All literatures deleted.")

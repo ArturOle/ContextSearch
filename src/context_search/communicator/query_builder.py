@@ -155,12 +155,31 @@ class QueryBuilder:
             logger.info("No literatures found.")
             return []
 
-    # TODO: This has to be implemented. Remember to delete all connected
-    # relations and nodes.
     @staticmethod
     def _delete_literature(tx, filename):
-        return NotImplementedError
-        # return tx.run(
-        #     "MATCH (a:Literature) WHERE a.filename = $filename DELETE a",
-        #     filename=filename
-        # )
+        return tx.run(
+            "MATCH (l:literature {filename: $filename})"
+            "WITH l "
+            "CALL {"
+            "WITH l MATCH (l)-[r]-() "
+            "DELETE r "
+            "} "
+            "CALL {"
+            "WITH l MATCH (l)-()-[r2]-(m)"
+            "WITH m"
+            "WHERE NOT (m)--() AND m <> l"
+            "DETACH DELETE m"
+            "RETURN m AS deleted_node"
+            "} "
+            "WITH COLLECT(deletedNode) AS deleted_nodes, l"
+            "DETACH DELETE l"
+            "RETURN deleted_nodes, l AS main_deleted_node",
+            filename=filename
+        )
+
+    @staticmethod
+    def _delete_all(tx):
+        tx.run(
+            "MATCH (n) "
+            "DETACH DELETE n"
+        )

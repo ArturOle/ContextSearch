@@ -11,3 +11,9 @@ class ContextSearch:
 
     def retrive(self, query, n=1):
         return self.data_manager.retrieve_data(query, n)
+
+    def delete(self, filename):
+        self.data_manager.delete(filename)
+
+    def delete_all(self):
+        self.data_manager.delete_all()
